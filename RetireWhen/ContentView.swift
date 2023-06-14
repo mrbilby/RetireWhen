@@ -39,6 +39,9 @@ struct ContentView: View {
     var totalFutureValueInflated: Float {
         return totalFutureValue / pow(1 + Float((Float(influences.inflation) / 100)), Float(influences.targetYears))
     }
+    
+    
+    
     var body: some View {
 
         NavigationView {
@@ -107,6 +110,7 @@ struct ContentView: View {
                             .padding(.top)
                         
                     }
+
                 )
                 {
                     ForEach(moneyBank.money.indices, id: \.self) { index in
@@ -128,7 +132,10 @@ struct ContentView: View {
                     }
                     .onDelete(perform: removeMoney)
                 }
+                
+                
             }
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -146,6 +153,7 @@ struct ContentView: View {
                     }
                 }
             }
+            
 
             .sheet(isPresented: $addOrEditMoney, onDismiss: { moneyToEdit = nil }) {
                 AddMonies(moneyBank: moneyBank)
@@ -156,8 +164,16 @@ struct ContentView: View {
             .sheet(isPresented: $checkInstructions) {
                 InstructionsView()
             }
+            
         }
+        .onTapGesture {
+            self.endEditing()
+        }
+
+        
     }
+    
+    
     
     func removeMoney(at offsets: IndexSet) {
         moneyBank.money.remove(atOffsets: offsets)

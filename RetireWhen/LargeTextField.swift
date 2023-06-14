@@ -10,6 +10,8 @@ import SwiftUI
 struct TextView: UIViewRepresentable {
     @Binding var text: String
     var placeholder: String
+    @Environment(\.colorScheme) var colorScheme
+
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -20,9 +22,10 @@ struct TextView: UIViewRepresentable {
         textView.delegate = context.coordinator
         textView.font = UIFont.systemFont(ofSize: 17)
         
-        if text.isEmpty {
-            textView.text = placeholder
-            textView.textColor = UIColor.lightGray
+
+        if colorScheme == .dark {
+            textView.text = text
+            textView.textColor = UIColor.white
         } else {
             textView.text = text
             textView.textColor = UIColor.black
@@ -32,16 +35,20 @@ struct TextView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UITextView, context: Context) {
         if uiView.text == placeholder {
-            if !text.isEmpty {
+            if colorScheme == .dark {
+                uiView.text = text
+                uiView.textColor = UIColor.white
+            } else {
                 uiView.text = text
                 uiView.textColor = UIColor.black
             }
         } else {
-            if uiView.text.isEmpty {
-                uiView.text = placeholder
-                uiView.textColor = UIColor.lightGray
+            if colorScheme == .dark {
+                uiView.text = text
+                uiView.textColor = UIColor.white
             } else {
-                text = uiView.text
+                uiView.text = text
+                uiView.textColor = UIColor.black
             }
         }
     }

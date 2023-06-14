@@ -15,6 +15,7 @@ struct AddMonies: View {
     @State private var newMoneyType = ""
     @State private var newMoneyAmount: Float = 0.0
     @State private var newMoneyGrowth: Float = 0.0
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationView {
@@ -30,8 +31,10 @@ struct AddMonies: View {
                     TextField("Title", text: $newMoneyTitle)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.horizontal)
+                        .foregroundColor(Color.primary)
 
-                    TextView(text: $newMoneyType, placeholder: "Enter any comments here...")
+                    TextView(text: $newMoneyType, placeholder: "")
+
                         .frame(height: 100) // set the height as required
                         .border(Color.gray, width: 0.2)
                         .padding(.horizontal)
