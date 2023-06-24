@@ -13,6 +13,7 @@ struct Monies: Identifiable, Codable, Equatable, Hashable {
     var type: String // what is the investment and any comments
     var amount: Float
     var growth: Float // how much will it grow
+    var regularity: String // monthly or lump sum
 }
 
 class Influences: ObservableObject, Codable {

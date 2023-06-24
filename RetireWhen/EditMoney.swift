@@ -18,6 +18,9 @@ struct EditMoney: View {
     @State private var newMoneyType = ""
     @State private var newMoneyAmount: Float = 0.0
     @State private var newMoneyGrowth: Float = 0.0
+    @State private var newRegularity = "Lump"
+    let regularTypes = ["Lump", "Monthly"]
+
     var body: some View {
         NavigationView {
             VStack {
@@ -56,6 +59,20 @@ struct EditMoney: View {
                             .frame(width: 100, alignment: .trailing)
                     }
                     .padding(.horizontal)
+                    HStack {
+                        Text("Regularity: ")
+                            .fontWeight(.bold)
+                        Spacer()
+                        Picker("Regularity", selection: $newRegularity) {
+                            ForEach(regularTypes, id: \.self) {
+                                Text($0)
+                            }
+
+                        }
+                        
+                    }
+                    .padding(.horizontal)
+                    
                 }
                 .padding(.bottom)
                 
@@ -68,12 +85,13 @@ struct EditMoney: View {
                             moneyBank.money[index].type = newMoneyType
                             moneyBank.money[index].amount = newMoneyAmount
                             moneyBank.money[index].growth = newMoneyGrowth
+                            moneyBank.money[index].regularity = newRegularity
                             dismiss()
 
                         }
                     } else {
                         // Add new Monies object
-                        let newMonies = Monies(title: newMoneyTitle, type: newMoneyType, amount: newMoneyAmount, growth: newMoneyGrowth)
+                        let newMonies = Monies(title: newMoneyTitle, type: newMoneyType, amount: newMoneyAmount, growth: newMoneyGrowth, regularity: newRegularity)
                         moneyBank.money.append(newMonies)
                         dismiss()
                     }
@@ -95,6 +113,7 @@ struct EditMoney: View {
                     newMoneyType = money.type
                     newMoneyAmount = money.amount
                     newMoneyGrowth = money.growth
+                    newRegularity = money.regularity
                 }
             }
 

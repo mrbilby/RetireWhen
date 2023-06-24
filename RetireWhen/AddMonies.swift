@@ -15,6 +15,8 @@ struct AddMonies: View {
     @State private var newMoneyType = ""
     @State private var newMoneyAmount: Float = 0.0
     @State private var newMoneyGrowth: Float = 0.0
+    @State private var newRegularity = "Lump"
+    let regularTypes = ["Lump", "Monthly"]
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
@@ -57,12 +59,25 @@ struct AddMonies: View {
                             .frame(width: 100, alignment: .trailing)
                     }
                     .padding(.horizontal)
+                    HStack {
+                        Text("Regularity: ")
+                            .fontWeight(.bold)
+                        Spacer()
+                        Picker("Regularity", selection: $newRegularity) {
+                            ForEach(regularTypes, id: \.self) {
+                                Text($0)
+                            }
+
+                        }
+                        
+                    }
+                    .padding(.horizontal)
                 }
                 .padding(.bottom)
                 
                 Button(action: {
 
-                    let newMonies = Monies(title: newMoneyTitle, type: newMoneyType, amount: newMoneyAmount, growth: newMoneyGrowth)
+                    let newMonies = Monies(title: newMoneyTitle, type: newMoneyType, amount: newMoneyAmount, growth: newMoneyGrowth, regularity: newRegularity)
                     moneyBank.money.append(newMonies)
                     dismiss()
                 }) {

@@ -23,13 +23,20 @@ struct ContentView: View {
     @State private var checkInstructions = false
     var totalValue: Float {
         moneyBank.money.reduce(0.0) { result, money in
-            return result + money.amount
+            return money.regularity == "Lump" ? result + money.amount : result
         }
     }
     
     var futureValues: [Float] {
-        moneyBank.money.map { money in
-            return money.amount * pow((1 + (money.growth / 100) / 12), 12 * Float(influences.targetYears))
+        moneyBank.money.flatMap { money -> [Float] in
+            if money.regularity == "Lump" {
+                return [money.amount * pow((1 + (money.growth / 100) / 12), 12 * Float(influences.targetYears))]
+            } else if money.regularity == "Monthly" {
+                return (1...12*influences.targetYears).map { month in
+                    money.amount * pow((1 + (money.growth / 100) / 12), Float(month))
+                }
+            }
+            return []
         }
     }
     
@@ -39,7 +46,6 @@ struct ContentView: View {
     var totalFutureValueInflated: Float {
         return totalFutureValue / pow(1 + Float((Float(influences.inflation) / 100)), Float(influences.targetYears))
     }
-    
     
     
     var body: some View {
@@ -82,7 +88,7 @@ struct ContentView: View {
                     VStack(alignment: .leading) {
 
                         HStack {
-                            Text("Total investments: ")
+                            Text("Total lump investments: ")
                                 .fontWeight(.bold)
                             Spacer()
                             Text("\(totalValue, specifier: "%.2f")")
@@ -113,22 +119,50 @@ struct ContentView: View {
 
                 )
                 {
+                    Text("Lump sums: ")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .padding(.top)
                     ForEach(moneyBank.money.indices, id: \.self) { index in
-                        HStack {
-                            Text(moneyBank.money[index].title)
-                                .font(.headline)
-                            Spacer()
-                            Text("\(moneyBank.money[index].amount, specifier: "%.2f")")
-                                .font(.body)
-                        }
-                        .padding(.horizontal)
-                        .onTapGesture {
-                            self.moneyToEdit = self.moneyBank.money[index]
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                self.editMoney = true
+                        if moneyBank.money[index].regularity == "Lump" {
+                            HStack {
+                                Text(moneyBank.money[index].title)
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(moneyBank.money[index].amount, specifier: "%.2f")")
+                                    .font(.body)
+                            }
+                            .padding(.horizontal)
+                            .onTapGesture {
+                                self.moneyToEdit = self.moneyBank.money[index]
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    self.editMoney = true
+                                }
                             }
                         }
-
+                    }
+                    .onDelete(perform: removeMoney)
+                    Text("Monthly: ")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .padding(.top)
+                    ForEach(moneyBank.money.indices, id: \.self) { index in
+                        if moneyBank.money[index].regularity == "Monthly" {
+                            HStack {
+                                Text(moneyBank.money[index].title)
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(moneyBank.money[index].amount, specifier: "%.2f")")
+                                    .font(.body)
+                            }
+                            .padding(.horizontal)
+                            .onTapGesture {
+                                self.moneyToEdit = self.moneyBank.money[index]
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    self.editMoney = true
+                                }
+                            }
+                        }
                     }
                     .onDelete(perform: removeMoney)
                 }
