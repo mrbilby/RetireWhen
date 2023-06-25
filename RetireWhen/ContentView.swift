@@ -26,6 +26,11 @@ struct ContentView: View {
             return money.regularity == "Lump" ? result + money.amount : result
         }
     }
+    var totalMonthlyValue: Float {
+        moneyBank.money.reduce(0.0) { result, money in
+            return money.regularity == "Monthly" ? result + money.amount : result
+        }
+    }
     
     var futureValues: [Float] {
         moneyBank.money.flatMap { money -> [Float] in
@@ -45,6 +50,9 @@ struct ContentView: View {
     }
     var totalFutureValueInflated: Float {
         return totalFutureValue / pow(1 + Float((Float(influences.inflation) / 100)), Float(influences.targetYears))
+    }
+    var inflationLostValue: Float {
+        return totalFutureValue-totalFutureValueInflated
     }
     
     
@@ -93,6 +101,12 @@ struct ContentView: View {
                             Spacer()
                             Text("\(totalValue, specifier: "%.2f")")
                         }
+                        HStack {
+                            Text("Total monthly investments: ")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text("\(totalMonthlyValue, specifier: "%.2f")")
+                        }
 
                         HStack {
                             Text("Future position: ")
@@ -106,6 +120,12 @@ struct ContentView: View {
                                 .fontWeight(.bold)
                             Spacer()
                             Text(" \(totalFutureValueInflated, specifier: "%.2f")")
+                        }
+                        HStack {
+                            Text("Loss to inflation: ")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(" \(inflationLostValue, specifier: "%.2f")")
                         }
                     }
                     .padding(.horizontal)
